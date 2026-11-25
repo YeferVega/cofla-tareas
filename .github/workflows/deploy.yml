@@ -1,0 +1,32 @@
+name: Build and Deploy to Render
+
+	on:
+		push:
+			branches:
+				- main
+		jobs:
+			build-and-deploy:
+				runs-on: ubuntu-latest
+
+				steps:
+					- name: checkout code
+					  users: actions/checkout@v4
+				
+					- name: Start session on Docket Hub
+				      users: docker/login-action@v3
+				      with:
+						username: ${{ secrets.DOCKERHUB_USERNAME }}
+						password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+					- name: Build and upload image on Docker Hub
+				  	  users: docker/build-push-action@v6
+				  	  with:
+						context: .
+					    file: . Dockerfile
+						push: true
+						tags: |
+							${{ secrets.DOCKERHUB_USERNAME }}/cofla-tareas:lastest
+							${{ secrets.DOCKERHUB_USERNAME }}/cofla-tareas:${{ github.sha }}
+						
+					- name:Trigger deployment Render
+					  run: curl -fs "{{ secrets.RENDER_DEPLOY_HOOK }}"
