@@ -1,0 +1,137 @@
+:root {
+  --color-bg: #f4f5f7;
+  --color-surface: #ffffff;
+  --color-ink: #1f2430;
+  --color-muted: #6b7280;
+  --color-accent: #2f6fed;
+  --color-accent-hover: #2457c5;
+  --color-danger: #b3261e;
+  --color-danger-bg: #fdecea;
+  --color-border: #e2e5ea;
+  --radius: 10px;
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--color-ink);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 560px;
+  margin: var(--space-lg) auto;
+  padding: 0 var(--space-md);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.7rem;
+}
+
+.subtitle {
+  margin: var(--space-xs) 0 var(--space-lg);
+  color: var(--color-muted);
+}
+
+.banner {
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+}
+
+.new-task {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.new-task input {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 1rem;
+}
+
+.new-task button,
+.delete {
+  border: none;
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.new-task button {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.new-task button:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.new-task button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.task-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.task {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.task-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.task.done .task-title span {
+  text-decoration: line-through;
+  color: var(--color-muted);
+}
+
+.delete {
+  background: transparent;
+  color: var(--color-danger);
+}
+
+.delete:hover {
+  background: var(--color-danger-bg);
+}
+
+.empty,
+.loading {
+  text-align: center;
+  color: var(--color-muted);
+  padding: var(--space-lg) 0;
+}

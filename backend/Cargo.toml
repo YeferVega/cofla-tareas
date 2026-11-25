@@ -1,0 +1,21 @@
+[package]
+name = "cofla-tareas-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "=0.8.9"
+tokio = { version = "=1.54.1", features = ["macros", "signal", "time", "net", "rt-multi-thread"] }
+sqlx = { version = "=0.9.1", default-features = false, features = ["runtime-tokio", "postgres"] }
+tower = { version = "0.5", features = ["util"] }
+tower-http = { version = "=0.7.1", features = ["set-header", "fs"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+async-trait = "=0.1.92"
+
+[dev-dependencies]
+tower = "0.5"
+serial_test = "4"
+
+[target.'cfg(unix)'.dev-dependencies]
+libc = "=0.2.191"

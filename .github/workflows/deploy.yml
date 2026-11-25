@@ -1,4 +1,4 @@
-﻿name: Build and Deploy to Render
+﻿name: Test, Build and Deploy to Render
 
 on:
   push:
@@ -6,20 +6,80 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: cofla
+          POSTGRES_PASSWORD: cofla
+          POSTGRES_DB: cofla
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cofla -d cofla"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
-      - name: Checkout del codigo
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Iniciar sesion en Docker Hub
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Type check frontend
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+      - name: Test frontend
+        working-directory: frontend
+        run: npm test
+
+      - name: Build frontend bundle
+        working-directory: frontend
+        run: npm run build
+
+      - name: Check backend formatting
+        working-directory: backend
+        run: cargo fmt --check
+
+      - name: Lint backend
+        working-directory: backend
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Test backend
+        working-directory: backend
+        env:
+          TEST_DATABASE_URL: postgres://cofla:cofla@localhost:5432/cofla
+        run: cargo test
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Construir y subir imagen a Docker Hub
+      - name: Build and push image to Docker Hub
         uses: docker/build-push-action@v6
         with:
           context: .
@@ -29,5 +89,5 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/cofla-tareas:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/cofla-tareas:${{ github.sha }}
 
-      - name: Disparar redespliegue en Render
+      - name: Trigger Render redeploy
         run: curl -fsS "${{ secrets.RENDER_DEPLOY_HOOK }}"

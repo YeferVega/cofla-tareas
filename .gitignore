@@ -1,4 +1,16 @@
+backend/target/
+frontend/node_modules/
+frontend/dist/
 node_modules/
 .env
-.DS_Store
+.env.*
 *.log
+backups/
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.swp
+*.swo
+.idea/
+.vscode/
